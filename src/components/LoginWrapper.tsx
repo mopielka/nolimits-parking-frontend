@@ -1,8 +1,8 @@
 import type { FC, PropsWithChildren } from 'react'
 
-import useLoginToken from '../hooks/useLoginToken.ts'
+import useLoginToken from '../hooks/useLoginToken'
 
-import LoginPage from './LoginPage.tsx'
+import LoginPage from './LoginPage'
 
 const LoginWrapper: FC<PropsWithChildren> = ({ children }) => {
   const { token, refetch, error, loading } = useLoginToken()

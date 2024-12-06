@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import type { TokenData } from '../clients/apiClient.ts'
-import { login } from '../clients/apiClient.ts'
+import type { TokenData } from '../clients/apiClient'
+import { login } from '../clients/apiClient'
 
 const storageKey = 'token'
 

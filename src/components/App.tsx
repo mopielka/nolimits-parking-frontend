@@ -2,9 +2,9 @@ import type { FC, Reducer } from 'react'
 import { useReducer } from 'react'
 
 import './App.css'
-import ExitTime from './ExitTime.tsx'
-import LoginWrapper from './LoginWrapper.tsx'
-import ParkingForm from './ParkingForm.tsx'
+import ExitTime from './ExitTime'
+import LoginWrapper from './LoginWrapper'
+import ParkingForm from './ParkingForm'
 
 enum ActionType {
   Reset,
