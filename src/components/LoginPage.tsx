@@ -1,5 +1,5 @@
-import {FC} from "react";
-import {TextField, Button, CircularProgress, Alert} from '@mui/material';
+import { Alert, Button, CircularProgress, TextField } from '@mui/material'
+import type { FC, FormEvent } from 'react'
 
 interface Props {
   onSubmit: (username: string, password: string) => void
@@ -7,18 +7,18 @@ interface Props {
   loading?: boolean
 }
 
-const LoginPage: FC<Props> = ({onSubmit, error, loading}) => {
+const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
   if (error) {
     return <Alert severity="error">{error}</Alert>
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const username = formData.get('username') as string;
-    const password = formData.get('password') as string;
-    onSubmit(username, password);
-  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    const username = formData.get('username') as string
+    const password = formData.get('password') as string
+    onSubmit(username, password)
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -46,10 +46,10 @@ const LoginPage: FC<Props> = ({onSubmit, error, loading}) => {
         fullWidth
         disabled={loading}
       >
-        {loading ? <CircularProgress size={24}/> : "Submit"}
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
       </Button>
     </form>
-  );
+  )
 }
 
 export default LoginPage

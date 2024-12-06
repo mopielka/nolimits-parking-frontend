@@ -1,41 +1,47 @@
-import {FC, Reducer, useReducer} from 'react'
+import type { FC, Reducer } from 'react'
+import { useReducer } from 'react'
+
 import './App.css'
-import ParkingForm from "./ParkingForm.tsx";
-import ExitTime from "./ExitTime.tsx";
-import LoginWrapper from "./LoginWrapper.tsx";
+import ExitTime from './ExitTime.tsx'
+import LoginWrapper from './LoginWrapper.tsx'
+import ParkingForm from './ParkingForm.tsx'
 
 enum ActionType {
   Reset,
   Submitted,
   ErrorOccurred,
-  Succeeded
+  Succeeded,
 }
 
-type Action = {
-  type: ActionType.Reset
-  payload: never
-} | {
-  type: ActionType.Submitted
-  payload: {
-    ticketId: string
-  }
-} | {
-  type: ActionType.ErrorOccurred
-  payload: {
-    error: string
-  }
-} | {
-  type: ActionType.Succeeded
-  payload: {
-    exitTime: Date
-  }
-}
+type Action =
+  | {
+      type: ActionType.Reset
+      payload: never
+    }
+  | {
+      type: ActionType.Submitted
+      payload: {
+        ticketId: string
+      }
+    }
+  | {
+      type: ActionType.ErrorOccurred
+      payload: {
+        error: string
+      }
+    }
+  | {
+      type: ActionType.Succeeded
+      payload: {
+        exitTime: Date
+      }
+    }
 
 interface AppState {
-  error?: string;
-  ticketId: string;
-  exitTime?: Date;
-  processing: boolean;
+  error?: string
+  ticketId: string
+  exitTime?: Date
+  processing: boolean
 }
 
 const initialState: AppState = {
@@ -57,7 +63,7 @@ const reducer: Reducer<AppState, Action> = (state, action) => {
 }
 
 const App: FC = () => {
-  const [state, dispatch] = useReducer(reducer, {...initialState});
+  const [state, dispatch] = useReducer(reducer, { ...initialState })
 
   const setTicketId = (ticketId: string) => {
     dispatch({ type: ActionType.Submitted, payload: { ticketId } })
@@ -66,10 +72,10 @@ const App: FC = () => {
   return (
     <LoginWrapper>
       <div className="appContainer">
-        { state.error && <div className="errorMessage" /> }
+        {state.error && <div className="errorMessage" />}
         <h1>Parking</h1>
         <ParkingForm onSubmit={setTicketId} disabled={state.processing} />
-        { state.exitTime && <ExitTime value={state.exitTime} /> }
+        {state.exitTime && <ExitTime value={state.exitTime} />}
       </div>
     </LoginWrapper>
   )
