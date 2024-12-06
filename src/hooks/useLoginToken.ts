@@ -4,6 +4,7 @@ import type { TokenData } from '../clients/apiClient'
 import { login } from '../clients/apiClient'
 
 const storageKey = 'token'
+const maxTimeoutMs = 2 ** 31 - 1
 
 const store = (tokenData: TokenData) => {
   localStorage.setItem(
@@ -50,9 +51,14 @@ const useLoginToken = () => {
     if (!state.tokenData) {
       return
     }
+    const ms = Math.min(
+      state.tokenData.expires.getTime() - new Date().getTime(),
+      maxTimeoutMs,
+    )
     invalidateTimeout = setTimeout(() => {
+      console.log('Executing timeout')
       setState((prevState) => ({ ...prevState, tokenData: null }))
-    }, state.tokenData.expires.getTime() - new Date().getTime())
+    }, ms)
 
     return () => clearTimeout(invalidateTimeout)
   }, [state.tokenData])
