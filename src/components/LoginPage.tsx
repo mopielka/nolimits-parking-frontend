@@ -1,5 +1,12 @@
-import { Alert, Button, CircularProgress, TextField } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  Snackbar,
+  TextField,
+  Typography,
+} from '@mui/material'
 import type { FC, FormEvent } from 'react'
+import { useState } from 'react'
 
 interface Props {
   onSubmit: (username: string, password: string) => void
@@ -8,8 +15,10 @@ interface Props {
 }
 
 const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
-  if (error) {
-    return <Alert severity="error">{error}</Alert>
+  const [open, setOpen] = useState(!!error)
+
+  const handleClose = () => {
+    setOpen(false)
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -21,34 +30,45 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        name="username"
-        label="Username"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        disabled={loading}
+    <>
+      <Typography variant="h5">No Limits parking – logowanie</Typography>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message={error}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ '& .MuiSnackbarContent-root': { backgroundColor: 'red' } }}
       />
-      <TextField
-        name="password"
-        label="Password"
-        type="password"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        disabled={loading}
-      />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        disabled={loading}
-      >
-        {loading ? <CircularProgress size={24} /> : 'Submit'}
-      </Button>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          name="username"
+          label="Nazwa użytkownika"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          disabled={loading}
+        />
+        <TextField
+          name="password"
+          label="Hasło"
+          type="password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Zaloguj się'}
+        </Button>
+      </form>
+    </>
   )
 }
 

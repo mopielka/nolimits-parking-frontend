@@ -3839,6 +3839,7 @@ __metadata:
     prettier: "npm:^3.4.2"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
+    react-simple-keyboard: "npm:^3.8.27"
     typescript: "npm:~5.6.2"
     typescript-eslint: "npm:^8.15.0"
     vite: "npm:^6.0.1"
@@ -4215,6 +4216,16 @@ __metadata:
   version: 0.14.2
   resolution: "react-refresh@npm:0.14.2"
   checksum: 10c0/875b72ef56b147a131e33f2abd6ec059d1989854b3ff438898e4f9310bfcc73acff709445b7ba843318a953cb9424bcc2c05af2b3d80011cee28f25aef3e2ebb
+  languageName: node
+  linkType: hard
+
+"react-simple-keyboard@npm:^3.8.27":
+  version: 3.8.27
+  resolution: "react-simple-keyboard@npm:3.8.27"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/8b998664427c4b93ed2b8cb620705d9358d8425798bef43f4ec2932e064d0f156da4990eabf7e2a39c7834ef4aa7ee197b65720c5979cd49b2b0d9517bdc301f
   languageName: node
   linkType: hard
 

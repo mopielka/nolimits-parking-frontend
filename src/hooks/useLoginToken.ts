@@ -56,7 +56,6 @@ const useLoginToken = () => {
       maxTimeoutMs,
     )
     invalidateTimeout = setTimeout(() => {
-      console.log('Executing timeout')
       setState((prevState) => ({ ...prevState, tokenData: null }))
     }, ms)
 
