@@ -103,6 +103,7 @@ const SnackbarMessage = ({
       style: {
         ...style,
         fontSize: '1.2rem',
+        margin: 'auto',
       },
     }}
   />

@@ -2,9 +2,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import type { FC } from 'react'
+import { useState } from 'react'
 import Keyboard from 'react-simple-keyboard'
+
 import 'react-simple-keyboard/build/css/index.css'
 import './ParkingForm.css'
+import BarcodeScanner from './BarcodeScanner'
 
 interface Props {
   onSubmit: (ticketId: string) => void
@@ -19,6 +22,8 @@ const ParkingForm: FC<Props> = ({
   ticketId,
   setTicketId,
 }) => {
+  const [scannerEnabled, setScannerEnabled] = useState(true)
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
     if (ticketId) {
@@ -74,6 +79,15 @@ const ParkingForm: FC<Props> = ({
         >
           Wyślij
         </Button>
+        <BarcodeScanner
+          enabled={scannerEnabled}
+          onRead={(code) => {
+            setScannerEnabled(false)
+            setTicketId(code)
+            onSubmit(code)
+          }}
+          visible
+        />
       </Stack>
     </form>
   )

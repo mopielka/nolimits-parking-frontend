@@ -62,6 +62,10 @@ const validateTicketAndGetExitTime = async (
     throw new Error('Nieprawidłowy numer biletu.')
   }
 
+  if (response.status === 400) {
+    throw new Error('Bilet już był walidowany.')
+  }
+
   if (!response.ok) {
     console.error('Ticket validation failed', await response.json())
     throw new Error('Walidacja biletu nieudana, spróbuj ponownie.')
