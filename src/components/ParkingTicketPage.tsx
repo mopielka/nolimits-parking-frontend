@@ -6,11 +6,12 @@ import {
   Typography,
 } from '@mui/material'
 import type { FC, Reducer } from 'react'
-import { useContext, useReducer } from 'react'
+import { useCallback, useContext, useReducer, useState } from 'react'
 
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
+import BarcodeScanner from './BarcodeScanner'
 import ParkingForm from './ParkingForm'
 
 const RESET_TIMEOUT = 5000
@@ -114,29 +115,43 @@ let resetTimeout: NodeJS.Timeout
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
+  const [scannerEnabled, setScannerEnabled] = useState(true)
 
-  const setTicketId = (ticketId: string) => {
+  const setTicketId = useCallback((ticketId: string) => {
     dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
-  }
+  }, [])
 
-  const submit = (ticketId: string) => {
-    dispatch({ type: ActionType.Submitted, payload: { ticketId } })
-    validateTicketAndGetExitTime(ticketId, token ?? '')
-      .then((exitTime) => {
-        dispatch({ type: ActionType.Succeeded, payload: { exitTime } })
-      })
-      .catch((error) => {
-        dispatch({
-          type: ActionType.ErrorOccurred,
-          payload: { error: (error as Error).message },
+  const submit = useCallback(
+    (ticketId: string) => {
+      dispatch({ type: ActionType.Submitted, payload: { ticketId } })
+      validateTicketAndGetExitTime(ticketId, token ?? '')
+        .then((exitTime) => {
+          dispatch({ type: ActionType.Succeeded, payload: { exitTime } })
         })
-      })
-      .finally(() => {
-        resetTimeout = setTimeout(() => {
-          dispatch({ type: ActionType.Reset })
-        }, RESET_TIMEOUT)
-      })
-  }
+        .catch((error) => {
+          dispatch({
+            type: ActionType.ErrorOccurred,
+            payload: { error: (error as Error).message },
+          })
+        })
+        .finally(() => {
+          resetTimeout = setTimeout(() => {
+            dispatch({ type: ActionType.Reset })
+          }, RESET_TIMEOUT)
+        })
+    },
+    [token],
+  )
+
+  const onBarcodeScannerRead = useCallback(
+    (code: string) => {
+      console.log('Read:', code)
+      setScannerEnabled(false)
+      setTicketId(code)
+      submit(code)
+    },
+    [setScannerEnabled, setTicketId, submit],
+  )
 
   return (
     <Container maxWidth="sm">
@@ -183,6 +198,11 @@ const ParkingTicketPage: FC = () => {
         setTicketId={setTicketId}
         disabled={Boolean(state.processing || state.error || state.exitTime)}
         onSubmit={submit}
+      />
+      <BarcodeScanner
+        enabled={scannerEnabled}
+        onRead={onBarcodeScannerRead}
+        visible
       />
     </Container>
   )
