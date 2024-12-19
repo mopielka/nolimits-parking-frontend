@@ -1,12 +1,102 @@
-.keyboard-button {
-    font-size: 16px;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin: 5px;
+/* General Keyboard Container Styles */
+.react-simple-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-input:disabled {
-    -webkit-text-fill-color: inherit !important;
-    color: black;
+/* Row Styles */
+.hg-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Spacing between rows */
+}
+
+.hg-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Spacing between buttons */
+}
+
+/* Button Styles */
+.hg-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px; /* Circle diameter */
+    height: 70px; /* Circle diameter */
+    background-color: #f0f0f0; /* Very light grey */
+    color: #000; /* Black text */
+    border-radius: 50%; /* Makes the button circular */
+    font-size: 24px; /* Large text size */
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Adds some depth */
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    outline: none; /* Prevent grey square on click */
+    -webkit-tap-highlight-color: transparent; /* Remove highlight on mobile devices */
+}
+
+.hg-button:hover {
+    background-color: #e0e0e0; /* Slightly darker grey on hover */
+}
+
+.hg-button:active {
+    transform: scale(0.95); /* Slight shrink effect when pressed */
+}
+
+/* Specific Button Styles */
+.hg-button-clear {
+    background-color: #d6d6d6; /* Slightly darker grey for functional buttons */
+}
+
+.hg-button-clear:hover {
+    background-color: #c6c6c6; /* Darker grey on hover for clear button */
+}
+
+.hg-button-bksp {
+    background-color: #d6d6d6; /* Slightly darker grey for backspace button */
+}
+
+.hg-button-bksp:hover {
+    background-color: #c6c6c6; /* Darker grey on hover for backspace button */
+}
+
+[data-skbtn="{clear}"] {
+    font-size: 36px;
+}
+
+button.send {
+    /*background-color: #d6d6d6; !* Matches functional button background *!*/
+    /*color: #000; !* Black text *!*/
+    font-weight: bold;
+    font-size: 24px;
+    border-radius: 40px; /* Rounded edges */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle depth */
+    padding: 10px 80px;
+    text-transform: none; /* Keeps the text casing as-is */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    z-index: 1;
+}
+
+button.send:hover {
+    background-color: #c6c6c6; /* Slightly darker grey on hover */
+}
+
+button.send:disabled {
+    background-color: #e0e0e0; /* Light grey when disabled */
+    color: #a0a0a0;
+}
+
+img {
+    height: 100px;
+}
+
+.ticketId {
+    color: mediumblue;
 }

@@ -1,11 +1,11 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import type { FC } from 'react'
 import Keyboard from 'react-simple-keyboard'
 
 import 'react-simple-keyboard/build/css/index.css'
 import './ParkingForm.css'
+import { Typography } from '@mui/material'
 
 interface Props {
   onSubmit: (ticketId: string) => void
@@ -43,33 +43,30 @@ const ParkingForm: FC<Props> = ({
   return (
     <form onSubmit={handleSubmit} className="parking-form">
       <Stack spacing={2} direction="column" alignItems="center">
-        <TextField
-          label="Numer biletu"
-          variant="outlined"
-          value={ticketId}
-          disabled
-          fullWidth
-        />
+        <Typography variant="h4" className="ticketId">
+          &nbsp;{ticketId}&nbsp;
+        </Typography>
         <Keyboard
           disableButtonHold={true}
           layout={{
-            default: ['1 2 3', '4 5 6', '7 8 9', '0 {bksp}', '{clear}'],
+            default: ['1 2 3', '4 5 6', '7 8 9', '{clear} 0 {bksp}'],
           }}
           display={{
             '{bksp}': '⌫',
-            '{clear}': 'wyczyść',
+            '{clear}': '⟳',
           }}
           onKeyPress={onKeyPress}
           buttonTheme={[
             {
               class: 'keyboard-button',
-              buttons: '1 2 3 4 5 6 7 8 9 0 {bksp} {clear}',
+              buttons: '1 2 3 4 5 6 7 8 9 {clear} 0 {bksp}',
             },
           ]}
+          theme="keyboard"
         />
         <Button
           variant="contained"
-          color="primary"
+          className="send"
           type="submit"
           disabled={disabled || !ticketId}
         >

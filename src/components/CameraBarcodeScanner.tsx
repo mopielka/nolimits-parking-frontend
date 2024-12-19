@@ -1,13 +1,13 @@
 import { BrowserMultiFormatOneDReader } from '@zxing/browser'
 import React, { useEffect, useRef } from 'react'
 
-interface BarcodeScannerProps {
+interface Props {
   enabled: boolean
   onRead: (code: string) => void
   visible?: boolean
 }
 
-const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
+const CameraBarcodeScanner: React.FC<Props> = ({
   enabled,
   onRead,
   visible = false,
@@ -79,4 +79,4 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   )
 }
 
-export default BarcodeScanner
+export default CameraBarcodeScanner

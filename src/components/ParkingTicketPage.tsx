@@ -6,13 +6,15 @@ import {
   Typography,
 } from '@mui/material'
 import type { FC, Reducer } from 'react'
-import { useCallback, useContext, useReducer, useState } from 'react'
+import { useCallback, useContext, useReducer } from 'react'
 
+import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
-import BarcodeScanner from './BarcodeScanner'
 import ParkingForm from './ParkingForm'
+import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
+import './ParkingTicketPage.css'
 
 const RESET_TIMEOUT = 5000
 
@@ -56,11 +58,13 @@ interface AppState {
   ticketId: string
   exitTime?: Date
   processing: boolean
+  scannerEnabled: boolean
 }
 
 const initialState: AppState = {
   processing: false,
   ticketId: '',
+  scannerEnabled: true,
 }
 
 const reducer: Reducer<AppState, Action> = (state, action) => {
@@ -71,7 +75,12 @@ const reducer: Reducer<AppState, Action> = (state, action) => {
     case ActionType.ErrorOccurred:
       return { ...state, processing: false, error: action.payload.error }
     case ActionType.Submitted:
-      return { ...state, ticketId: action.payload.ticketId, processing: true }
+      return {
+        ...state,
+        ticketId: action.payload.ticketId,
+        processing: true,
+        scannerEnabled: false,
+      }
     case ActionType.Succeeded:
       return { ...state, processing: false, exitTime: action.payload.exitTime }
     case ActionType.SetTicketId:
@@ -103,8 +112,9 @@ const SnackbarMessage = ({
     ContentProps={{
       style: {
         ...style,
-        fontSize: '1.2rem',
+        fontSize: '2rem',
         margin: 'auto',
+        textAlign: 'center',
       },
     }}
   />
@@ -115,7 +125,6 @@ let resetTimeout: NodeJS.Timeout
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
-  const [scannerEnabled, setScannerEnabled] = useState(true)
 
   const setTicketId = useCallback((ticketId: string) => {
     dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
@@ -145,27 +154,17 @@ const ParkingTicketPage: FC = () => {
 
   const onBarcodeScannerRead = useCallback(
     (code: string) => {
-      console.log('Read:', code)
-      setScannerEnabled(false)
       setTicketId(code)
       submit(code)
     },
-    [setScannerEnabled, setTicketId, submit],
+    [setTicketId, submit],
   )
 
   return (
-    <Container maxWidth="sm">
+    <Container className="container">
       <Backdrop
         open={!!state.error || !!state.exitTime || state.processing}
-        style={{
-          zIndex: 1300,
-          color: '#fff',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+        className="backdrop"
       >
         {state.processing && <CircularProgress />}
       </Backdrop>
@@ -187,10 +186,11 @@ const ParkingTicketPage: FC = () => {
           color: 'white',
         }}
       />
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Parking
       </Typography>
-      <Typography variant="body1" gutterBottom>
+      <img src={singleCarImageUrl} />
+      <Typography variant="h6" gutterBottom>
         Zeskanuj bilet lub wpisz numer aby uzyskać darmowy parking
       </Typography>
       <ParkingForm
@@ -199,10 +199,14 @@ const ParkingTicketPage: FC = () => {
         disabled={Boolean(state.processing || state.error || state.exitTime)}
         onSubmit={submit}
       />
-      <BarcodeScanner
-        enabled={scannerEnabled}
+      {/*<CameraBarcodeScanner*/}
+      {/*  enabled={false} // state.scannerEnabled*/}
+      {/*  onRead={onBarcodeScannerRead}*/}
+      {/*  visible*/}
+      {/*/>*/}
+      <PhysicalBarcodeScanner
+        enabled={state.scannerEnabled}
         onRead={onBarcodeScannerRead}
-        visible
       />
     </Container>
   )
