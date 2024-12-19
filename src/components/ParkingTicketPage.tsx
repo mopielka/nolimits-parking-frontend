@@ -12,10 +12,15 @@ import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
+import CameraBarcodeScanner from './CameraBarcodeScanner'
 import ParkingForm from './ParkingForm'
 import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
 import './ParkingTicketPage.css'
 
+const enableCameraScanner = Boolean(
+  Number(import.meta.env.VITE_ENABLE_CAMERA_SCANNER),
+)
+console.log('camera', enableCameraScanner)
 const RESET_TIMEOUT = 5000
 
 enum ActionType {
@@ -193,17 +198,21 @@ const ParkingTicketPage: FC = () => {
       <Typography variant="h6" gutterBottom>
         Zeskanuj bilet lub wpisz numer aby uzyskać darmowy parking
       </Typography>
-      <ParkingForm
-        ticketId={state.ticketId}
-        setTicketId={setTicketId}
-        disabled={Boolean(state.processing || state.error || state.exitTime)}
-        onSubmit={submit}
-      />
-      {/*<CameraBarcodeScanner*/}
-      {/*  enabled={false} // state.scannerEnabled*/}
-      {/*  onRead={onBarcodeScannerRead}*/}
-      {/*  visible*/}
-      {/*/>*/}
+      <Container>
+        <ParkingForm
+          ticketId={state.ticketId}
+          setTicketId={setTicketId}
+          disabled={Boolean(state.processing || state.error || state.exitTime)}
+          onSubmit={submit}
+        />
+        {enableCameraScanner && (
+          <CameraBarcodeScanner
+            enabled={state.scannerEnabled}
+            onRead={onBarcodeScannerRead}
+            visible
+          />
+        )}
+      </Container>
       <PhysicalBarcodeScanner
         enabled={state.scannerEnabled}
         onRead={onBarcodeScannerRead}

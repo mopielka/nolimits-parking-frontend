@@ -24,7 +24,7 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="md">
+      <Container>
         <SecretPressZone onPress={onSecretPress}>
           <LoginWrapper>
             <ParkingTicketPage />
