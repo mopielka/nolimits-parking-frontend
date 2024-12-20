@@ -6,7 +6,6 @@ const lockActions = () => {
   document.addEventListener('touchstart', (event) => {
     if (event.touches.length > 1) event.preventDefault() // Disable multi-touch gestures
   })
-  void document.documentElement.requestFullscreen()
 }
 
 const setUpAutoRefresh = (seconds: number = 300) => {
@@ -23,4 +22,8 @@ const setUpAutoRefresh = (seconds: number = 300) => {
   }, 1000)
 }
 
-export { lockActions, setUpAutoRefresh }
+const enableFullScreen = () => void document.documentElement.requestFullscreen()
+
+const exitFullScreen = () => void document.exitFullscreen()
+
+export { lockActions, setUpAutoRefresh, enableFullScreen, exitFullScreen }

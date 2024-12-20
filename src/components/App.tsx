@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import type { FC } from 'react'
 
 import { clearStorage } from '../service/tokenStorage'
+import { enableFullScreen, exitFullScreen } from '../utils/kioskMode'
 
 import LoginWrapper from './LoginWrapper'
 import ParkingTicketPage from './ParkingTicketPage'
@@ -26,7 +27,7 @@ const App: FC = () => {
     <ThemeProvider theme={theme}>
       <Container>
         <SecretPressZone onPress={onSecretPress}>
-          <LoginWrapper>
+          <LoginWrapper onLogin={enableFullScreen} onLogout={exitFullScreen}>
             <ParkingTicketPage />
           </LoginWrapper>
         </SecretPressZone>

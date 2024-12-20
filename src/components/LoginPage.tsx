@@ -6,7 +6,7 @@ import {
   Typography,
 } from '@mui/material'
 import type { FC, FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   onSubmit: (username: string, password: string) => void
@@ -15,12 +15,6 @@ interface Props {
 }
 
 const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
-  const [open, setOpen] = useState(!!error)
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
@@ -29,17 +23,30 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
     onSubmit(username, password)
   }
 
+  const [displayedErrorMessage, setDisplayedErrorMessage] = useState(
+    error || '',
+  )
+
+  useEffect(() => {
+    setDisplayedErrorMessage(error ?? '')
+    const t = setTimeout(() => {
+      setDisplayedErrorMessage('')
+    }, 3000)
+    return () => clearTimeout(t)
+  }, [error])
+
   return (
     <>
       <Typography variant="h5">No Limits parking – logowanie</Typography>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={error}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        sx={{ '& .MuiSnackbarContent-root': { backgroundColor: 'red' } }}
-      />
+      {displayedErrorMessage && (
+        <Snackbar
+          open={!!displayedErrorMessage}
+          autoHideDuration={6000}
+          message={displayedErrorMessage}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          sx={{ '& .MuiSnackbarContent-root': { backgroundColor: 'red' } }}
+        />
+      )}
       <form onSubmit={handleSubmit}>
         <TextField
           name="username"

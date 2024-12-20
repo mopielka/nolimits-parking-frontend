@@ -1,11 +1,10 @@
+import { Typography } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import type { FC } from 'react'
 import Keyboard from 'react-simple-keyboard'
-
 import 'react-simple-keyboard/build/css/index.css'
 import './ParkingForm.css'
-import { Typography } from '@mui/material'
 
 interface Props {
   onSubmit: (ticketId: string) => void
