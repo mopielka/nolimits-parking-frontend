@@ -13,6 +13,7 @@ import { validateTicketAndGetExitTime } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
 import CameraBarcodeScanner from './CameraBarcodeScanner'
+import Clock from './Clock'
 import ParkingForm from './ParkingForm'
 import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
 import './ParkingTicketPage.css'
@@ -20,7 +21,7 @@ import './ParkingTicketPage.css'
 const enableCameraScanner = Boolean(
   Number(import.meta.env.VITE_ENABLE_CAMERA_SCANNER),
 )
-console.log('camera', enableCameraScanner)
+
 const RESET_TIMEOUT = 5000
 
 enum ActionType {
@@ -191,6 +192,7 @@ const ParkingTicketPage: FC = () => {
           color: 'white',
         }}
       />
+      <Clock />
       <Typography variant="h2" gutterBottom>
         Parking
       </Typography>
