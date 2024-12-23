@@ -8,6 +8,8 @@ import {
 import type { FC, FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 
+import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
+
 interface Props {
   onSubmit: (username: string, password: string) => void
   error?: string | null
@@ -15,17 +17,30 @@ interface Props {
 }
 
 const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const username = formData.get('username') as string
-    const password = formData.get('password') as string
     onSubmit(username, password)
   }
 
   const [displayedErrorMessage, setDisplayedErrorMessage] = useState(
     error || '',
   )
+
+  const fillFromScanner = (value: string) => {
+    const splitIndex = value.indexOf(':')
+    if (splitIndex === -1) {
+      console.error('Invalid scanned format: no colon found')
+      return
+    }
+    const scannedUsername = value.substring(0, splitIndex)
+    const scannedPassword = value.substring(splitIndex + 1)
+    setUsername(scannedUsername)
+    setPassword(scannedPassword)
+    onSubmit(scannedUsername, scannedPassword)
+  }
 
   useEffect(() => {
     setDisplayedErrorMessage(error ?? '')
@@ -55,6 +70,8 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
           fullWidth
           margin="normal"
           disabled={loading}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
           name="password"
@@ -64,6 +81,8 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
           fullWidth
           margin="normal"
           disabled={loading}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <Button
           type="submit"
@@ -75,6 +94,10 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
           {loading ? <CircularProgress size={24} /> : 'Zaloguj się'}
         </Button>
       </form>
+      <PhysicalBarcodeScanner
+        onRead={fillFromScanner}
+        enabled={!loading && !displayedErrorMessage}
+      />
     </>
   )
 }
