@@ -8,6 +8,7 @@ import {
 import type { FC, FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 
+import CameraBarcodeScanner from './CameraBarcodeScanner'
 import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
 
 interface Props {
@@ -15,6 +16,10 @@ interface Props {
   error?: string | null
   loading?: boolean
 }
+
+const cameraBarcodeScannerEnabled = Boolean(
+  Number(import.meta.env.VITE_ENABLE_CAMERA_SCANNER),
+)
 
 const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
   const [username, setUsername] = useState('')
@@ -97,6 +102,11 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
       <PhysicalBarcodeScanner
         onRead={fillFromScanner}
         enabled={!loading && !displayedErrorMessage}
+      />
+      <CameraBarcodeScanner
+        enabled={cameraBarcodeScannerEnabled}
+        onRead={fillFromScanner}
+        visible={false}
       />
     </>
   )

@@ -99,6 +99,8 @@ const pad = (num: number) => (num < 10 ? `0${num}` : num)
 const formatTime = (date?: Date) =>
   date ? `${date.getHours()}:${pad(date.getMinutes())}` : ''
 
+const validateScannedCode = (code: string): boolean => /^[0-9]+$/.test(code)
+
 const SnackbarMessage = ({
   open,
   message,
@@ -160,6 +162,9 @@ const ParkingTicketPage: FC = () => {
 
   const onBarcodeScannerRead = useCallback(
     (code: string) => {
+      if (!validateScannedCode(code)) {
+        return
+      }
       setTicketId(code)
       submit(code)
     },
