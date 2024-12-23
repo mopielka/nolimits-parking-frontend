@@ -17,90 +17,87 @@ const CameraBarcodeScanner: React.FC<Props> = ({
     if (!enabled) {
       return
     }
+
     if (!('BarcodeDetector' in window)) {
       console.warn('Barcode Detection API is not supported in this browser.')
       return
     }
 
+    const barcodeDetector = new BarcodeDetector()
     let lastCode: string | null = null
     let consecutiveCount = 0
     let stopScanning = false
 
-    const barcodeDetector = new BarcodeDetector()
-    const maxScans = 100
-    let totalScans = 0
-
-    const startScanner = async () => {
+    const startCamera = async () => {
       if (!videoRef.current) return
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' },
         })
+
         videoRef.current.srcObject = stream
-        void videoRef.current.play()
 
-        const scanFrame = async () => {
-          if (stopScanning || !videoRef.current) return
-
-          const canvas = document.createElement('canvas')
-          const video = videoRef.current
-
-          canvas.width = video.videoWidth
-          canvas.height = video.videoHeight
-          const context = canvas.getContext('2d')
-          if (!context) return
-
-          context.drawImage(video, 0, 0, canvas.width, canvas.height)
-
+        // Wait for the video to load before calling play()
+        videoRef.current.onloadedmetadata = async () => {
           try {
-            const barcodes = await barcodeDetector.detect(canvas)
-            if (barcodes.length > 0) {
-              const currentCode = barcodes[0].rawValue
+            await videoRef.current?.play()
+          } catch (playError) {
+            console.error('Error playing video:', playError)
+          }
 
-              if (currentCode === lastCode) {
-                consecutiveCount++
-              } else {
-                lastCode = currentCode
-                consecutiveCount = 1
-              }
+          const scanFrame = async () => {
+            if (stopScanning || !videoRef.current) return
 
-              if (consecutiveCount >= 3) {
-                onRead(currentCode)
-                stopScanning = true // Pause scanning for 5 seconds
-                setTimeout(() => {
-                  stopScanning = false
-                  totalScans = 0
-                  startScanner()
-                }, 5000)
-                return
+            const canvas = document.createElement('canvas')
+            const video = videoRef.current
+
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            const context = canvas.getContext('2d')
+            if (!context) return
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+            try {
+              const barcodes = await barcodeDetector.detect(canvas)
+              if (barcodes.length > 0) {
+                const currentCode = barcodes[0].rawValue
+
+                if (currentCode === lastCode) {
+                  consecutiveCount++
+                } else {
+                  lastCode = currentCode
+                  consecutiveCount = 1
+                }
+
+                if (consecutiveCount >= 3) {
+                  onRead(currentCode)
+                  stopScanning = true
+
+                  // Pause scanning for 5 seconds
+                  setTimeout(() => {
+                    stopScanning = false
+                  }, 5000)
+                }
               }
+            } catch (error) {
+              console.error('Barcode detection failed:', error)
             }
-          } catch (error) {
-            console.error('Barcode detection failed:', error)
+
+            if (!stopScanning) {
+              requestAnimationFrame(scanFrame)
+            }
           }
 
-          totalScans++
-          if (totalScans < maxScans) {
-            requestAnimationFrame(scanFrame)
-          } else {
-            // Reset scanning after maxScans
-            stopScanning = true
-            setTimeout(() => {
-              stopScanning = false
-              totalScans = 0
-              startScanner()
-            }, 5000)
-          }
+          requestAnimationFrame(scanFrame)
         }
-
-        requestAnimationFrame(scanFrame)
       } catch (error) {
         console.error('Error accessing camera:', error)
       }
     }
 
-    void startScanner()
+    startCamera()
 
     return () => {
       stopScanning = true
@@ -110,21 +107,17 @@ const CameraBarcodeScanner: React.FC<Props> = ({
         videoRef.current.srcObject = null
       }
     }
-  }, [onRead, enabled])
+  }, [enabled, onRead])
 
   return (
     <div
       style={{
-        width: '0%',
+        width: visible ? '0%' : '0%',
         overflow: 'hidden',
         position: 'relative',
       }}
     >
-      <video
-        ref={videoRef}
-        style={{ width: '100%', opacity: Number(visible) }}
-        autoPlay
-      />
+      <video ref={videoRef} style={{ width: '100%' }} autoPlay />
     </div>
   )
 }
