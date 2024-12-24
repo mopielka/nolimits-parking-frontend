@@ -14,10 +14,6 @@ const CameraBarcodeScanner: React.FC<Props> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
-
     if (!('BarcodeDetector' in window)) {
       console.warn('Barcode Detection API is not supported in this browser.')
       return
@@ -47,7 +43,7 @@ const CameraBarcodeScanner: React.FC<Props> = ({
           }
 
           const scanFrame = async () => {
-            if (stopScanning || !videoRef.current) return
+            if (!enabled || stopScanning || !videoRef.current) return
 
             const canvas = document.createElement('canvas')
             const video = videoRef.current
@@ -112,7 +108,8 @@ const CameraBarcodeScanner: React.FC<Props> = ({
   return (
     <div
       style={{
-        width: visible ? '0%' : '0%',
+        // minWidth: visible ? '100%' : 0,
+        // width: visible ? '100%' : '0%',
         overflow: 'hidden',
         position: 'relative',
       }}

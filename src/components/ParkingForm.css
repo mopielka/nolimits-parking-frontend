@@ -1,11 +1,14 @@
+.parking-form {
+    min-width: 400px;
+}
+
 /* General Keyboard Container Styles */
 .react-simple-keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 400px;
+    max-width: 500px; /* Increased width for larger numpad */
     margin: 0 auto;
 }
 
@@ -27,16 +30,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 70px; /* Circle diameter */
-    height: 70px; /* Circle diameter */
+    width: 75px; /* Slightly larger buttons */
+    height: 75px; /* Circle diameter */
     background-color: #f0f0f0; /* Very light grey */
-    color: #000; /* Black text */
     border-radius: 50%; /* Makes the button circular */
-    font-size: 24px; /* Large text size */
+    font-size: 1.5rem; /* Adjusted for better fit */
     font-weight: bold;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Adds some depth */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds some depth */
     cursor: pointer;
-    border: none;
     transition: background-color 0.2s ease, transform 0.1s ease;
     outline: none; /* Prevent grey square on click */
     -webkit-tap-highlight-color: transparent; /* Remove highlight on mobile devices */
@@ -71,9 +72,8 @@
     font-size: 36px;
 }
 
+/* Button Styling for Submit */
 button.send {
-    /*background-color: #d6d6d6; !* Matches functional button background *!*/
-    /*color: #000; !* Black text *!*/
     font-weight: bold;
     font-size: 24px;
     border-radius: 40px; /* Rounded edges */
@@ -93,10 +93,23 @@ button.send:disabled {
     color: #a0a0a0;
 }
 
-img {
-    height: 100px;
-}
-
+/* Dynamic Digit Resizing */
 .ticketId {
     color: mediumblue;
+    font-size: 2rem; /* Default size */
+    font-weight: bold;
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden; /* Hide overflow if too long */
+    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+    max-width: 100%; /* Restrict width to container */
+    text-align: center;
+}
+
+.ticketId.small-digits {
+    font-size: 1.5rem; /* Smaller font size for 11+ digits */
+}
+
+/* Image Styles */
+img {
+    height: 100px;
 }

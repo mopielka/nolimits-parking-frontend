@@ -5,8 +5,8 @@ import {
   Snackbar,
   Typography,
 } from '@mui/material'
-import type { FC, Reducer } from 'react'
-import { useCallback, useContext, useReducer } from 'react'
+import type { FC } from 'react'
+import React, { useCallback, useContext, useReducer } from 'react'
 
 import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
@@ -33,31 +33,11 @@ enum ActionType {
 }
 
 type Action =
-  | {
-      type: ActionType.Reset
-    }
-  | {
-      type: ActionType.Submitted
-      payload: {
-        ticketId: string
-      }
-    }
-  | {
-      type: ActionType.ErrorOccurred
-      payload: {
-        error: string
-      }
-    }
-  | {
-      type: ActionType.Succeeded
-      payload: {
-        exitTime: Date
-      }
-    }
-  | {
-      type: ActionType.SetTicketId
-      payload: { ticketId: string }
-    }
+  | { type: ActionType.Reset }
+  | { type: ActionType.Submitted; payload: { ticketId: string } }
+  | { type: ActionType.ErrorOccurred; payload: { error: string } }
+  | { type: ActionType.Succeeded; payload: { exitTime: Date } }
+  | { type: ActionType.SetTicketId; payload: { ticketId: string } }
 
 interface AppState {
   error?: string
@@ -73,7 +53,7 @@ const initialState: AppState = {
   scannerEnabled: true,
 }
 
-const reducer: Reducer<AppState, Action> = (state, action) => {
+const reducer: React.Reducer<AppState, Action> = (state, action) => {
   switch (action.type) {
     case ActionType.Reset:
       clearTimeout(resetTimeout)
@@ -91,6 +71,8 @@ const reducer: Reducer<AppState, Action> = (state, action) => {
       return { ...state, processing: false, exitTime: action.payload.exitTime }
     case ActionType.SetTicketId:
       return { ...state, ticketId: action.payload.ticketId }
+    default:
+      return state
   }
 }
 
@@ -172,7 +154,7 @@ const ParkingTicketPage: FC = () => {
   )
 
   return (
-    <Container className="container">
+    <Container className="parking-ticket-page">
       <Backdrop
         open={!!state.error || !!state.exitTime || state.processing}
         className="backdrop"
@@ -201,17 +183,13 @@ const ParkingTicketPage: FC = () => {
       <Typography variant="h2" gutterBottom>
         Parking
       </Typography>
-      <img src={singleCarImageUrl} />
+      <img src={singleCarImageUrl} alt="Single Car" />
       <Typography variant="h6" gutterBottom>
-        Zeskanuj bilet lub wpisz numer aby uzyskać darmowy parking
+        {enableCameraScanner && 'Zeskanuj bilet lub wpisz numer '}
+        {!enableCameraScanner && 'Wpisz numer biletu '}
+        aby uzyskać darmowy parking
       </Typography>
-      <Container>
-        <ParkingForm
-          ticketId={state.ticketId}
-          setTicketId={setTicketId}
-          disabled={Boolean(state.processing || state.error || state.exitTime)}
-          onSubmit={submit}
-        />
+      <div className="scanner-and-form-container">
         {enableCameraScanner && (
           <CameraBarcodeScanner
             enabled={state.scannerEnabled}
@@ -219,7 +197,13 @@ const ParkingTicketPage: FC = () => {
             visible
           />
         )}
-      </Container>
+        <ParkingForm
+          ticketId={state.ticketId}
+          setTicketId={setTicketId}
+          disabled={Boolean(state.processing || state.error || state.exitTime)}
+          onSubmit={submit}
+        />
+      </div>
       <PhysicalBarcodeScanner
         enabled={state.scannerEnabled}
         onRead={onBarcodeScannerRead}

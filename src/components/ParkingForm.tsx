@@ -40,9 +40,17 @@ const ParkingForm: FC<Props> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="parking-form">
-      <Stack spacing={2} direction="column" alignItems="center">
-        <Typography variant="h4" className="ticketId">
+    <form onSubmit={handleSubmit}>
+      <Stack
+        spacing={2}
+        direction="column"
+        alignItems="center"
+        className="parking-form"
+      >
+        <Typography
+          variant="h4"
+          className={`ticketId ${ticketId.length > 15 ? 'small-digits' : ''}`}
+        >
           &nbsp;{ticketId}&nbsp;
         </Typography>
         <Keyboard
