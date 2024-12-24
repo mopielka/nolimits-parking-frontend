@@ -3,14 +3,9 @@ import React, { useEffect, useRef } from 'react'
 interface Props {
   enabled: boolean
   onRead: (code: string) => void
-  visible?: boolean
 }
 
-const CameraBarcodeScanner: React.FC<Props> = ({
-  enabled,
-  onRead,
-  visible = false,
-}) => {
+const CameraBarcodeScanner: React.FC<Props> = ({ enabled, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
@@ -108,8 +103,6 @@ const CameraBarcodeScanner: React.FC<Props> = ({
   return (
     <div
       style={{
-        // minWidth: visible ? '100%' : 0,
-        // width: visible ? '100%' : '0%',
         overflow: 'hidden',
         position: 'relative',
       }}

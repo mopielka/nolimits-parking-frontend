@@ -194,7 +194,6 @@ const ParkingTicketPage: FC = () => {
           <CameraBarcodeScanner
             enabled={state.scannerEnabled}
             onRead={onBarcodeScannerRead}
-            visible
           />
         )}
         <ParkingForm
