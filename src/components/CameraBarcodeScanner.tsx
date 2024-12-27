@@ -5,7 +5,6 @@ interface Props {
   enabled?: boolean
   onRead: (code: string) => void
 }
-// Make the button larger. AI!
 const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
@@ -113,7 +112,7 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   return (
     <div style={{ overflow: 'hidden', position: 'relative' }}>
       {!scannerVisible ? (
-        <Button variant="contained" color="primary" onClick={handleButtonClick}>
+        <Button variant="contained" color="primary" onClick={handleButtonClick} size="large">
           Kliknij aby zeskanować
         </Button>
       ) : (
