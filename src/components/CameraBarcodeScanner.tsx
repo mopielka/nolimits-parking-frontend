@@ -1,12 +1,13 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface Props {
   enabled?: boolean
   onRead: (code: string) => void
 }
-// Make this scanner appear only after clicking a button like "Kliknij aby zeskanować". Then, for 1 minute it's visible, then button reappears again instead of the video preview. AI!
+
 const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [scannerVisible, setScannerVisible] = useState(false)
 
   useEffect(() => {
     if (!('BarcodeDetector' in window)) {
@@ -29,7 +30,6 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
 
         videoRef.current.srcObject = stream
 
-        // Wait for the video to load before calling play()
         videoRef.current.onloadedmetadata = async () => {
           try {
             await videoRef.current?.play()
@@ -66,7 +66,6 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
                   onRead(currentCode)
                   stopScanning = true
 
-                  // Pause scanning for 5 seconds
                   setTimeout(() => {
                     stopScanning = false
                   }, 5000)
@@ -88,7 +87,9 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
       }
     }
 
-    startCamera()
+    if (scannerVisible) {
+      startCamera()
+    }
 
     return () => {
       stopScanning = true
@@ -98,16 +99,22 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
         videoRef.current.srcObject = null
       }
     }
-  }, [enabled, onRead])
+  }, [enabled, onRead, scannerVisible])
+
+  const handleButtonClick = () => {
+    setScannerVisible(true)
+    setTimeout(() => {
+      setScannerVisible(false)
+    }, 60000) // Hide scanner after 1 minute
+  }
 
   return (
-    <div
-      style={{
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
-      <video ref={videoRef} style={{ width: '100%' }} autoPlay />
+    <div style={{ overflow: 'hidden', position: 'relative' }}>
+      {!scannerVisible ? (
+        <button onClick={handleButtonClick}>Kliknij aby zeskanować</button>
+      ) : (
+        <video ref={videoRef} style={{ width: '100%' }} autoPlay />
+      )}
     </div>
   )
 }
