@@ -6,7 +6,7 @@ import {
   Typography,
 } from '@mui/material'
 import type { FC } from 'react'
-import React, { useCallback, useContext, useReducer } from 'react'
+import { useCallback, useContext, useReducer } from 'react'
 
 import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
@@ -15,14 +15,23 @@ import LoginTokenContext from '../contexts/LoginTokenContext'
 import CameraBarcodeScanner from './CameraBarcodeScanner'
 import Clock from './Clock'
 import ParkingForm from './ParkingForm'
+import styles from './ParkingTicketPage.module.css'
 import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
-import './ParkingTicketPage.css'
 
-const enableCameraScanner = Boolean(
+// Constants
+const RESET_TIMEOUT = 5000
+const CAMERA_SCANNER_ENABLED = Boolean(
   Number(import.meta.env.VITE_ENABLE_CAMERA_SCANNER),
 )
 
-const RESET_TIMEOUT = 5000
+// Types
+interface AppState {
+  error?: string
+  ticketId: string
+  exitTime?: Date
+  processing: boolean
+  scannerEnabled: boolean
+}
 
 enum ActionType {
   Reset,
@@ -39,60 +48,28 @@ type Action =
   | { type: ActionType.Succeeded; payload: { exitTime: Date } }
   | { type: ActionType.SetTicketId; payload: { ticketId: string } }
 
-interface AppState {
-  error?: string
-  ticketId: string
-  exitTime?: Date
-  processing: boolean
-  scannerEnabled: boolean
+// Utility functions
+const formatTime = (date?: Date): string => {
+  if (!date) return ''
+  const pad = (num: number) => (num < 10 ? `0${num}` : num)
+  return `${date.getHours()}:${pad(date.getMinutes())}`
 }
-
-const initialState: AppState = {
-  processing: false,
-  ticketId: '',
-  scannerEnabled: true,
-}
-
-const reducer: React.Reducer<AppState, Action> = (state, action) => {
-  switch (action.type) {
-    case ActionType.Reset:
-      clearTimeout(resetTimeout)
-      return { ...initialState }
-    case ActionType.ErrorOccurred:
-      return { ...state, processing: false, error: action.payload.error }
-    case ActionType.Submitted:
-      return {
-        ...state,
-        ticketId: action.payload.ticketId,
-        processing: true,
-        scannerEnabled: false,
-      }
-    case ActionType.Succeeded:
-      return { ...state, processing: false, exitTime: action.payload.exitTime }
-    case ActionType.SetTicketId:
-      return { ...state, ticketId: action.payload.ticketId }
-    default:
-      return state
-  }
-}
-
-const pad = (num: number) => (num < 10 ? `0${num}` : num)
-
-const formatTime = (date?: Date) =>
-  date ? `${date.getHours()}:${pad(date.getMinutes())}` : ''
 
 const validateScannedCode = (code: string): boolean => /^[0-9]+$/.test(code)
 
-const SnackbarMessage = ({
-  open,
-  message,
-  onClose,
-  style,
-}: {
+// Components
+interface SnackbarMessageProps {
   open: boolean
   message: string
   onClose: () => void
-  style: React.CSSProperties
+  isError?: boolean
+}
+
+const SnackbarMessage: FC<SnackbarMessageProps> = ({
+  open,
+  message,
+  onClose,
+  isError = false,
 }) => (
   <Snackbar
     open={open}
@@ -100,53 +77,82 @@ const SnackbarMessage = ({
     message={message}
     anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     ContentProps={{
-      style: {
-        ...style,
-        fontSize: '2rem',
-        margin: 'auto',
-        textAlign: 'center',
-      },
+      className: `${styles.snackbarContent} ${
+        isError ? styles.errorSnackbar : styles.successSnackbar
+      }`,
     }}
   />
 )
 
-let resetTimeout: NodeJS.Timeout
-
+// Main component
 const ParkingTicketPage: FC = () => {
-  const [state, dispatch] = useReducer(reducer, { ...initialState })
+  const initialState: AppState = {
+    processing: false,
+    ticketId: '',
+    scannerEnabled: true,
+  }
+
+  const reducer = (state: AppState, action: Action): AppState => {
+    switch (action.type) {
+      case ActionType.Reset:
+        return { ...initialState }
+      case ActionType.ErrorOccurred:
+        return { ...state, processing: false, error: action.payload.error }
+      case ActionType.Submitted:
+        return {
+          ...state,
+          ticketId: action.payload.ticketId,
+          processing: true,
+          scannerEnabled: false,
+        }
+      case ActionType.Succeeded:
+        return {
+          ...state,
+          processing: false,
+          exitTime: action.payload.exitTime,
+        }
+      case ActionType.SetTicketId:
+        return { ...state, ticketId: action.payload.ticketId }
+      default:
+        return state
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, initialState)
   const token = useContext(LoginTokenContext)
 
   const setTicketId = useCallback((ticketId: string) => {
     dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
   }, [])
 
+  const handleReset = useCallback(() => {
+    dispatch({ type: ActionType.Reset })
+  }, [])
+
   const submit = useCallback(
-    (ticketId: string) => {
+    async (ticketId: string) => {
       dispatch({ type: ActionType.Submitted, payload: { ticketId } })
-      validateTicketAndGetExitTime(ticketId, token ?? '')
-        .then((exitTime) => {
-          dispatch({ type: ActionType.Succeeded, payload: { exitTime } })
+      try {
+        const exitTime = await validateTicketAndGetExitTime(
+          ticketId,
+          token ?? '',
+        )
+        dispatch({ type: ActionType.Succeeded, payload: { exitTime } })
+      } catch (error) {
+        dispatch({
+          type: ActionType.ErrorOccurred,
+          payload: { error: (error as Error).message },
         })
-        .catch((error) => {
-          dispatch({
-            type: ActionType.ErrorOccurred,
-            payload: { error: (error as Error).message },
-          })
-        })
-        .finally(() => {
-          resetTimeout = setTimeout(() => {
-            dispatch({ type: ActionType.Reset })
-          }, RESET_TIMEOUT)
-        })
+      } finally {
+        setTimeout(handleReset, RESET_TIMEOUT)
+      }
     },
-    [token],
+    [token, handleReset],
   )
 
-  const onBarcodeScannerRead = useCallback(
+  const handleBarcodeScan = useCallback(
     (code: string) => {
-      if (!validateScannedCode(code)) {
-        return
-      }
+      if (!validateScannedCode(code)) return
       setTicketId(code)
       submit(code)
     },
@@ -154,58 +160,70 @@ const ParkingTicketPage: FC = () => {
   )
 
   return (
-    <Container className="parking-ticket-page">
+    <Container className={styles.pageContainer}>
       <Backdrop
         open={!!state.error || !!state.exitTime || state.processing}
-        className="backdrop"
+        className={styles.backdropOverlay}
       >
         {state.processing && <CircularProgress />}
       </Backdrop>
+
       <SnackbarMessage
         open={!!state.error}
-        onClose={() => dispatch({ type: ActionType.Reset })}
+        onClose={handleReset}
         message={state.error || ''}
-        style={{
-          backgroundColor: 'red',
-          color: 'white',
-        }}
+        isError
       />
+
       <SnackbarMessage
         open={!!state.exitTime}
-        onClose={() => dispatch({ type: ActionType.Reset })}
+        onClose={handleReset}
         message={`Walidacja udana, proszę wyjechać przed: ${formatTime(state.exitTime)}`}
-        style={{
-          backgroundColor: 'green',
-          color: 'white',
-        }}
       />
-      <Clock />
+
+      <Clock className={styles.clockWrapper} />
+
       <Typography variant="h2" gutterBottom>
         Parking
       </Typography>
-      <img src={singleCarImageUrl} alt="Single Car" />
+
+      <img
+        src={singleCarImageUrl}
+        alt="Single Car"
+        className={styles.mainImage}
+      />
+
       <Typography variant="h6" gutterBottom>
-        {enableCameraScanner && 'Zeskanuj bilet lub wpisz numer '}
-        {!enableCameraScanner && 'Wpisz numer biletu '}
+        {CAMERA_SCANNER_ENABLED
+          ? 'Zeskanuj bilet lub wpisz numer '
+          : 'Wpisz numer biletu '}
         aby uzyskać darmowy parking
       </Typography>
-      <div className="scanner-and-form-container">
-        {enableCameraScanner && (
-          <CameraBarcodeScanner
-            enabled={state.scannerEnabled}
-            onRead={onBarcodeScannerRead}
-          />
+
+      <div className={styles.scannerFormGrid}>
+        {CAMERA_SCANNER_ENABLED && (
+          <div className={styles.scannerContainer}>
+            <CameraBarcodeScanner
+              enabled={state.scannerEnabled}
+              onRead={handleBarcodeScan}
+            />
+          </div>
         )}
-        <ParkingForm
-          ticketId={state.ticketId}
-          setTicketId={setTicketId}
-          disabled={Boolean(state.processing || state.error || state.exitTime)}
-          onSubmit={submit}
-        />
+        <div className={styles.formContainer}>
+          <ParkingForm
+            ticketId={state.ticketId}
+            setTicketId={setTicketId}
+            disabled={Boolean(
+              state.processing || state.error || state.exitTime,
+            )}
+            onSubmit={submit}
+          />
+        </div>
       </div>
+
       <PhysicalBarcodeScanner
         enabled={state.scannerEnabled}
-        onRead={onBarcodeScannerRead}
+        onRead={handleBarcodeScan}
       />
     </Container>
   )

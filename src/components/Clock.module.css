@@ -1,0 +1,14 @@
+.clockContainer {
+    display: flex;
+    font-size: 24px;
+    gap: 1px;
+    margin: 10px;
+    position: absolute;
+    top: 0;
+}
+
+.clockDigit {
+    display: inline-block;
+    min-width: 0.6em;
+    text-align: center;
+}

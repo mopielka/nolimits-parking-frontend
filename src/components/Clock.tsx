@@ -1,30 +1,40 @@
-import type { FC } from 'react'
+import type { FC, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
-import './Clock.css'
 
-const padTime = (part: number) => part.toString().padStart(2, '0')
+import styles from './Clock.module.css'
+
+const padTime = (part: number): string => part.toString().padStart(2, '0')
 
 const formatTime = (date: Date): string =>
   [date.getHours(), date.getMinutes(), date.getSeconds()].map(padTime).join(':')
 
-const Clock: FC = () => {
-  const [time, setTime] = useState<string>('')
+const Clock: FC<HTMLProps<HTMLDivElement>> = ({ className, ...divProps }) => {
+  const [time, setTime] = useState<string>(formatTime(new Date()))
 
   useEffect(() => {
     const updateTime = () => {
       setTime(formatTime(new Date()))
     }
 
-    updateTime() // Initial call to set time immediately
+    // Initial call to set time immediately
+    updateTime()
+
+    // Update every second
     const intervalId = setInterval(updateTime, 1000)
 
-    return () => clearInterval(intervalId) // Cleanup on unmount
+    // Cleanup on unmount
+    return () => clearInterval(intervalId)
   }, [])
 
   return (
-    <div className="clock">
-      {time.split('').map((char, i) => (
-        <span key={i}>{char}</span>
+    <div
+      className={`${styles.clockContainer} ${className || ''}`}
+      {...divProps}
+    >
+      {time.split('').map((char, index) => (
+        <span key={`${char}-${index}`} className={styles.clockDigit}>
+          {char}
+        </span>
       ))}
     </div>
   )
