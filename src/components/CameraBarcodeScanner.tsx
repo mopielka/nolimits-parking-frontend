@@ -4,7 +4,7 @@ interface Props {
   enabled?: boolean
   onRead: (code: string) => void
 }
-
+// Besides of the preview disappearing after 1 minute, make it also disappear (and button appear again) right after a successful scan. Another thing is use some nice Material UI styling for the button. AI!
 const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
