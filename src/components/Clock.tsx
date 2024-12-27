@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import './Clock.css'
+import styles from './Clock.module.css'
 
 const padTime = (part: number) => part.toString().padStart(2, '0')
 
@@ -22,7 +22,7 @@ const Clock: FC = () => {
   }, [])
 
   return (
-    <div className="clock">
+    <div className={styles.clock}>
       {time.split('').map((char, i) => (
         <span key={i}>{char}</span>
       ))}

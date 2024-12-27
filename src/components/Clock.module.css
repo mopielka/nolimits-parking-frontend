@@ -1,0 +1,9 @@
+.clock {
+    position: absolute;
+    top: 0;
+    margin: 10px;
+    font-size: 24px;
+}
+.clock span {
+    display: inline-block;
+}
