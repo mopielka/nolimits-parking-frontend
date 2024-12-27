@@ -112,6 +112,8 @@ const SnackbarMessage = ({
 
 let resetTimeout: NodeJS.Timeout
 
+// In the component below, only display Camera Barcode Scanner after user clicks a button (newly created) that shows in its place. AI!
+
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
