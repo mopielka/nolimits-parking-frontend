@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 
 interface Props {
-  enabled: boolean
+  enabled?: boolean
   onRead: (code: string) => void
 }
-
-const CameraBarcodeScanner: React.FC<Props> = ({ enabled, onRead }) => {
+// Make this scanner appear only after clicking a button like "Kliknij aby zeskanować". Then, for 1 minute it's visible, then button reappears again instead of the video preview. AI!
+const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
