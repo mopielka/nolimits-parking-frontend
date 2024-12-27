@@ -1,6 +1,7 @@
 import { Button } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 
+// Make it always use front camera of the device if possible; if not, use any available. AI!
 interface Props {
   onRead: (code: string) => void
 }
