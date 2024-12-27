@@ -1,10 +1,10 @@
 import {
   Backdrop,
+  Button,
   CircularProgress,
   Container,
   Snackbar,
   Typography,
-  Button,
 } from '@mui/material'
 import type { FC } from 'react'
 import React, { useCallback, useContext, useReducer, useState } from 'react'
@@ -113,6 +113,7 @@ const SnackbarMessage = ({
 
 let resetTimeout: NodeJS.Timeout
 
+// The button to display the scanner should be displayed after every successful code read (no matter the result of submit). User clicks button -> scans code -> buttons displays again. AI!
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
