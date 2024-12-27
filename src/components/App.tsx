@@ -9,8 +9,6 @@ import LoginWrapper from './LoginWrapper'
 import ParkingTicketPage from './ParkingTicketPage'
 import SecretPressZone from './SecretPressZone'
 
-import './App.css'
-
 const theme = createTheme({
   typography: {
     fontFamily: '"Nunito Sans", sans-serif',
