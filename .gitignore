@@ -25,3 +25,4 @@ dist-ssr
 
 
 .env*
+# Add aider files to gitignore but keep .aider.conf.yml in it. AI!
