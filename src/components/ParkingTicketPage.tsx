@@ -69,7 +69,7 @@ const reducer: React.Reducer<AppState, Action> = (state, action) => {
         scannerEnabled: false,
       }
     case ActionType.Succeeded:
-      return { ...state, processing: false, exitTime: action.payload.exitTime }
+      return { ...state, processing: false, exitTime: action.payload.exitTime, scannerEnabled: true }
     case ActionType.SetTicketId:
       return { ...state, ticketId: action.payload.ticketId }
     default:
@@ -113,7 +113,6 @@ const SnackbarMessage = ({
 
 let resetTimeout: NodeJS.Timeout
 
-// The button to display the scanner should be displayed after every successful code read (no matter the result of submit). User clicks button -> scans code -> buttons displays again. AI!
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
