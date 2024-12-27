@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface Props {
   enabled?: boolean
   onRead: (code: string) => void
 }
-
+// Make the button larger. AI!
 const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
