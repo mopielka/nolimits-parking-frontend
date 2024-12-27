@@ -1,11 +1,12 @@
 import { Button } from '@mui/material'
-import React, { useEffect, useRef, useState } from 'react'
+import type { FC } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Make it always use front camera of the device if possible; if not, use any available.
 interface Props {
   onRead: (code: string) => void
 }
-const CameraBarcodeScanner: React.FC<Props> = ({ onRead }) => {
+const CameraBarcodeScanner: FC<Props> = ({ onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
 
