@@ -103,10 +103,9 @@ const LoginPage: FC<Props> = ({ onSubmit, error, loading }) => {
         onRead={fillFromScanner}
         enabled={!loading && !displayedErrorMessage}
       />
-      <CameraBarcodeScanner
-        enabled={cameraBarcodeScannerEnabled}
-        onRead={fillFromScanner}
-      />
+      {cameraBarcodeScannerEnabled && (
+        <CameraBarcodeScanner onRead={fillFromScanner} />
+      )}
     </>
   )
 }

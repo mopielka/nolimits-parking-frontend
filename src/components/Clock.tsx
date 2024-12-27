@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
+
 import styles from './Clock.module.css'
 
 const padTime = (part: number) => part.toString().padStart(2, '0')

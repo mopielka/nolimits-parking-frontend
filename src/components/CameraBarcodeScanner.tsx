@@ -2,10 +2,9 @@ import { Button } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 
 interface Props {
-  enabled?: boolean
   onRead: (code: string) => void
 }
-const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
+const CameraBarcodeScanner: React.FC<Props> = ({ onRead }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
 
@@ -38,7 +37,7 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
           }
 
           const scanFrame = async () => {
-            if (!enabled || stopScanning || !videoRef.current) return
+            if (stopScanning || !videoRef.current) return
 
             const canvas = document.createElement('canvas')
             const video = videoRef.current
@@ -100,19 +99,24 @@ const CameraBarcodeScanner: React.FC<Props> = ({ enabled = true, onRead }) => {
         videoRef.current.srcObject = null
       }
     }
-  }, [enabled, onRead, scannerVisible])
+  }, [onRead, scannerVisible])
 
   const handleButtonClick = () => {
     setScannerVisible(true)
     setTimeout(() => {
       setScannerVisible(false)
-    }, 60000) // Hide scanner after 1 minute
+    }, 30_000) // Hide scanner after 1 minute
   }
 
   return (
     <div style={{ overflow: 'hidden', position: 'relative' }}>
       {!scannerVisible ? (
-        <Button variant="contained" color="primary" onClick={handleButtonClick} size="large">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleButtonClick}
+          size="large"
+        >
           Kliknij aby zeskanować
         </Button>
       ) : (

@@ -1,13 +1,12 @@
 import {
   Backdrop,
-  Button,
   CircularProgress,
   Container,
   Snackbar,
   Typography,
 } from '@mui/material'
 import type { FC } from 'react'
-import React, { useCallback, useContext, useReducer, useState } from 'react'
+import React, { useCallback, useContext, useReducer } from 'react'
 
 import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
@@ -69,7 +68,12 @@ const reducer: React.Reducer<AppState, Action> = (state, action) => {
         scannerEnabled: false,
       }
     case ActionType.Succeeded:
-      return { ...state, processing: false, exitTime: action.payload.exitTime, scannerEnabled: true }
+      return {
+        ...state,
+        processing: false,
+        exitTime: action.payload.exitTime,
+        scannerEnabled: true,
+      }
     case ActionType.SetTicketId:
       return { ...state, ticketId: action.payload.ticketId }
     default:
@@ -116,7 +120,6 @@ let resetTimeout: NodeJS.Timeout
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
-  const [cameraScannerVisible, setCameraScannerVisible] = useState(false)
 
   const setTicketId = useCallback((ticketId: string) => {
     dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
@@ -146,13 +149,16 @@ const ParkingTicketPage: FC = () => {
 
   const onBarcodeScannerRead = useCallback(
     (code: string) => {
+      if (state.processing || state.error) {
+        return
+      }
       if (!validateScannedCode(code)) {
         return
       }
       setTicketId(code)
       submit(code)
     },
-    [setTicketId, submit],
+    [setTicketId, submit, state.processing, state.error],
   )
 
   return (
@@ -192,19 +198,8 @@ const ParkingTicketPage: FC = () => {
         aby uzyskać darmowy parking
       </Typography>
       <div className="scanner-and-form-container">
-        {enableCameraScanner && cameraScannerVisible && (
-          <CameraBarcodeScanner
-            enabled={state.scannerEnabled}
-            onRead={onBarcodeScannerRead}
-          />
-        )}
-        {enableCameraScanner && !cameraScannerVisible && (
-          <Button
-            variant="contained"
-            onClick={() => setCameraScannerVisible(true)}
-          >
-            Otwórz skaner
-          </Button>
+        {enableCameraScanner && (
+          <CameraBarcodeScanner onRead={onBarcodeScannerRead} />
         )}
         <ParkingForm
           ticketId={state.ticketId}

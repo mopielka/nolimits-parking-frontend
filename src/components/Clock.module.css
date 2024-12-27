@@ -1,8 +1,7 @@
 .clock {
-    position: absolute;
-    top: 0;
     margin: 10px;
     font-size: 24px;
+    font-weight: bolder;
 }
 .clock span {
     display: inline-block;
