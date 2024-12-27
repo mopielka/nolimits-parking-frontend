@@ -1,7 +1,7 @@
 import { Button } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 
-// Make it always use front camera of the device if possible; if not, use any available. AI!
+// Make it always use front camera of the device if possible; if not, use any available.
 interface Props {
   onRead: (code: string) => void
 }
@@ -25,7 +25,7 @@ const CameraBarcodeScanner: React.FC<Props> = ({ onRead }) => {
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
+          video: { facingMode: { exact: 'user' } }, // Use front camera if available
         })
 
         videoRef.current.srcObject = stream
@@ -106,7 +106,7 @@ const CameraBarcodeScanner: React.FC<Props> = ({ onRead }) => {
     setScannerVisible(true)
     setTimeout(() => {
       setScannerVisible(false)
-    }, 30_000) // Hide scanner after 1 minute
+    }, 30_000) // Hide scanner after 30 seconds
   }
 
   return (
