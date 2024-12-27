@@ -4,9 +4,10 @@ import {
   Container,
   Snackbar,
   Typography,
+  Button,
 } from '@mui/material'
 import type { FC } from 'react'
-import React, { useCallback, useContext, useReducer } from 'react'
+import React, { useCallback, useContext, useReducer, useState } from 'react'
 
 import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
@@ -112,11 +113,10 @@ const SnackbarMessage = ({
 
 let resetTimeout: NodeJS.Timeout
 
-// In the component below, only display Camera Barcode Scanner after user clicks a button (newly created) that shows in its place. AI!
-
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
+  const [cameraScannerVisible, setCameraScannerVisible] = useState(false)
 
   const setTicketId = useCallback((ticketId: string) => {
     dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
@@ -192,11 +192,19 @@ const ParkingTicketPage: FC = () => {
         aby uzyskać darmowy parking
       </Typography>
       <div className="scanner-and-form-container">
-        {enableCameraScanner && (
+        {enableCameraScanner && cameraScannerVisible && (
           <CameraBarcodeScanner
             enabled={state.scannerEnabled}
             onRead={onBarcodeScannerRead}
           />
+        )}
+        {enableCameraScanner && !cameraScannerVisible && (
+          <Button
+            variant="contained"
+            onClick={() => setCameraScannerVisible(true)}
+          >
+            Otwórz skaner
+          </Button>
         )}
         <ParkingForm
           ticketId={state.ticketId}
