@@ -25,8 +25,9 @@ const CameraBarcodeScanner: FC<Props> = ({ onRead }) => {
       if (!videoRef.current) return
 
       try {
+        // Make it use the user facing camera
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: 'user' } }, // Use front camera if available
+          video: { facingMode: 'user' }, // Use front camera if available
         })
 
         videoRef.current.srcObject = stream
