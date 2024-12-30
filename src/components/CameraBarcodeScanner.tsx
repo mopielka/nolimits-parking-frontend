@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from 'react'
 // Make it always use front camera of the device if possible; if not, use any available.
 interface Props {
   onRead: (code: string) => void
+  className?: string
 }
-const CameraBarcodeScanner: FC<Props> = ({ onRead }) => {
+const CameraBarcodeScanner: FC<Props> = ({ onRead, className }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
 
@@ -112,7 +113,10 @@ const CameraBarcodeScanner: FC<Props> = ({ onRead }) => {
   }
 
   return (
-    <div style={{ overflow: 'hidden', position: 'relative' }}>
+    <div
+      style={{ overflow: 'hidden', position: 'relative' }}
+      className={className}
+    >
       {!scannerVisible ? (
         <Button
           variant="contained"

@@ -8,7 +8,7 @@ import {
 import type { FC } from 'react'
 import React, { useCallback, useContext, useReducer } from 'react'
 
-import singleCarImageUrl from '../assets/single-car.png'
+// import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicketAndGetExitTime } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
@@ -188,10 +188,10 @@ const ParkingTicketPage: FC = () => {
         }}
       />
       <Clock />
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h4" gutterBottom fontWeight="bolder">
         Parking
       </Typography>
-      <img src={singleCarImageUrl} alt="Single Car" />
+      {/*<img src={singleCarImageUrl} alt="Single Car" />*/}
       <Typography variant="h6" gutterBottom>
         {enableCameraScanner && 'Zeskanuj bilet lub wpisz numer '}
         {!enableCameraScanner && 'Wpisz numer biletu '}
@@ -199,7 +199,10 @@ const ParkingTicketPage: FC = () => {
       </Typography>
       <div className="scanner-and-form-container">
         {enableCameraScanner && (
-          <CameraBarcodeScanner onRead={onBarcodeScannerRead} />
+          <CameraBarcodeScanner
+            onRead={onBarcodeScannerRead}
+            className="camera-barcode-scanner"
+          />
         )}
         <ParkingForm
           ticketId={state.ticketId}

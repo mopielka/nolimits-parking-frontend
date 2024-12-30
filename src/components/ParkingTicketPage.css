@@ -1,3 +1,7 @@
+.title {
+    margin-bottom: 0;
+}
+
 .backdrop {
     z-index: 2;
 }
@@ -18,57 +22,40 @@ h4.ticketId {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 10px; /* Reduced gap between main sections */
+    gap: 0; /* Reduced gap between main sections */
 }
 
 img {
     height: auto;
-    max-height: 100px; /* Ensure image stays proportional */
-    margin: 10px 0; /* Tightened spacing around the image */
+    max-height: 20vh; /* Responsive max height */
+    margin: 2vh 0; /* Tightened spacing around the image */
 }
 
 .clock {
-    font-size: 1.2rem; /* Slightly smaller clock text */
+    font-size: 2vh; /* Slightly smaller clock text */
     font-weight: bold;
     position: relative;
-    margin-bottom: 5px; /* Reduced spacing below the clock */
+    margin-bottom: 2vh; /* Reduced spacing below the clock */
 }
 
 /* Grid Layout for Scanner and Form */
 .scanner-and-form-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two equal columns */
-    grid-gap: 20px; /* Space between columns */
-    width: 100%; /* Ensure it spans the full width */
+    grid-gap: 2vh; /* Space between columns */
+    width: 90%; /* Ensure it spans the full width */
     max-width: 900px; /* Restrict max width for large screens */
-    margin-top: 10px;
+    margin-top: 2vh;
     justify-items: stretch;
     align-items: start; /* Align items at the top */
 }
 
-.scanner-and-form-container > .camera-barcode-scanner {
-    grid-column: 1; /* Always left */
-    width: 100%; /* Take full column width */
-    max-width: 100%; /* Ensure it doesn't overflow */
-}
-
-.scanner-and-form-container > .parking-form {
-    grid-column: 2; /* Always right */
-    width: 100%; /* Take full column width */
-    max-width: 100%; /* Ensure it doesn't overflow */
-}
-
-.camera-barcode-scanner {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 5px; /* Reduced padding inside the scanner box */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly smaller shadow */
-}
-
+.camera-barcode-scanner,
 .parking-form {
+    max-width: 400px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    padding: 20px 0; /* Reduced padding inside the form */
+    padding: 2vh; /* Reduced padding inside the scanner/form */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly smaller shadow */
 }
 
