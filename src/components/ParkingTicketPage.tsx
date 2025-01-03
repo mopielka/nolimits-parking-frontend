@@ -9,7 +9,7 @@ import type { FC } from 'react'
 import React, { useCallback, useContext, useReducer } from 'react'
 
 // import singleCarImageUrl from '../assets/single-car.png'
-import { validateTicketAndGetExitTime } from '../clients/apiClient'
+import { validateTicket } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
 import CameraBarcodeScanner from './CameraBarcodeScanner'
@@ -36,13 +36,17 @@ type Action =
   | { type: ActionType.Reset }
   | { type: ActionType.Submitted; payload: { ticketId: string } }
   | { type: ActionType.ErrorOccurred; payload: { error: string } }
-  | { type: ActionType.Succeeded; payload: { exitTime: Date } }
+  | {
+      type: ActionType.Succeeded
+      payload: { exitTime: Date | null; remainingPayment: string | null }
+    }
   | { type: ActionType.SetTicketId; payload: { ticketId: string } }
 
 interface AppState {
   error?: string
   ticketId: string
   exitTime?: Date
+  remainingPayment?: string
   processing: boolean
   scannerEnabled: boolean
 }
@@ -71,7 +75,8 @@ const reducer: React.Reducer<AppState, Action> = (state, action) => {
       return {
         ...state,
         processing: false,
-        exitTime: action.payload.exitTime,
+        exitTime: action.payload.exitTime ?? undefined,
+        remainingPayment: action.payload.remainingPayment ?? undefined,
         scannerEnabled: true,
       }
     case ActionType.SetTicketId:
@@ -128,9 +133,15 @@ const ParkingTicketPage: FC = () => {
   const submit = useCallback(
     (ticketId: string) => {
       dispatch({ type: ActionType.Submitted, payload: { ticketId } })
-      validateTicketAndGetExitTime(ticketId, token ?? '')
-        .then((exitTime) => {
-          dispatch({ type: ActionType.Succeeded, payload: { exitTime } })
+      validateTicket(ticketId, token ?? '')
+        .then(({ exitTime, remainingPayment }) => {
+          dispatch({
+            type: ActionType.Succeeded,
+            payload: {
+              exitTime: exitTime ?? null,
+              remainingPayment: remainingPayment ?? null,
+            },
+          })
         })
         .catch((error) => {
           dispatch({
@@ -184,6 +195,15 @@ const ParkingTicketPage: FC = () => {
         message={`Walidacja udana, proszę wyjechać przed: ${formatTime(state.exitTime)}`}
         style={{
           backgroundColor: 'green',
+          color: 'white',
+        }}
+      />
+      <SnackbarMessage
+        open={!!state.remainingPayment}
+        onClose={() => dispatch({ type: ActionType.Reset })}
+        message={`Walidacja udana, konieczna dopłata w kasie: ${state.remainingPayment}`}
+        style={{
+          backgroundColor: 'orange',
           color: 'white',
         }}
       />

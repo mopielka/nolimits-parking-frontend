@@ -11,7 +11,13 @@ interface LoginResponseData {
 }
 
 interface ValidateResponseData {
-  exitTime: number
+  exitTime?: number
+  remainingPayment?: string
+}
+
+interface ParkingExitInfo {
+  exitTime?: Date
+  remainingPayment?: string
 }
 
 const login = async (
@@ -41,10 +47,10 @@ const login = async (
   }
 }
 
-const validateTicketAndGetExitTime = async (
+const validateTicket = async (
   ticketId: string,
   apiToken: string,
-): Promise<Date> => {
+): Promise<ParkingExitInfo> => {
   if (!/^\d+$/.test(ticketId) || ticketId.length > 100) {
     throw new Error('Nieprawidłowy numer biletu.')
   }
@@ -72,7 +78,11 @@ const validateTicketAndGetExitTime = async (
   }
 
   const data: ValidateResponseData = await response.json()
-  return new Date(data.exitTime * 1000)
+
+  return {
+    exitTime: data.exitTime ? new Date(data.exitTime * 1000) : undefined,
+    remainingPayment: data.remainingPayment ?? undefined,
+  }
 }
 
 const safeJsonParse = async (
@@ -85,5 +95,5 @@ const safeJsonParse = async (
   }
 }
 
-export { login, validateTicketAndGetExitTime }
+export { login, validateTicket }
 export type { TokenData }
