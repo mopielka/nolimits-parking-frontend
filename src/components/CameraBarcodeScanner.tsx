@@ -7,9 +7,11 @@ interface Props {
   onRead: (code: string) => void
   className?: string
 }
+
 const CameraBarcodeScanner: FC<Props> = ({ onRead, className }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [scannerVisible, setScannerVisible] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (!('BarcodeDetector' in window)) {
@@ -107,7 +109,10 @@ const CameraBarcodeScanner: FC<Props> = ({ onRead, className }) => {
 
   const handleButtonClick = () => {
     setScannerVisible(true)
-    setTimeout(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    timeoutRef.current = setTimeout(() => {
       setScannerVisible(false)
     }, 30_000) // Hide scanner after 30 seconds
   }

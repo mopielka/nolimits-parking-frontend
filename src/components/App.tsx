@@ -23,7 +23,7 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container>
+      <Container style={{ position: 'relative' }}>
         <SecretPressZone onPress={onSecretPress}>
           <LoginWrapper onLogin={enableFullScreen} onLogout={exitFullScreen}>
             <ParkingTicketPage />
