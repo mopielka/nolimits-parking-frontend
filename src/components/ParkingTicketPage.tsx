@@ -215,7 +215,7 @@ const ParkingTicketPage: FC = () => {
       <Typography variant="h6" gutterBottom>
         {enableCameraScanner && 'Zeskanuj bilet lub wpisz numer '}
         {!enableCameraScanner && 'Wpisz numer biletu '}
-        aby uzyskać darmowy parking
+        aby uzyskać zniżkę na parking
       </Typography>
       <div className="scanner-and-form-container">
         {enableCameraScanner && (
