@@ -10,49 +10,45 @@ const SCANNER_TIME_TO_CLEAR = 100 // Time in milliseconds to clear the buffer if
 const MIN_BARCODE_LENGTH = 3
 
 const PhysicalBarcodeScanner: FC<Props> = ({ onRead, enabled }) => {
-  const buffer = useRef<string>('') // Buffer to collect barcode characters
-  const timeout = useRef<NodeJS.Timeout | null>(null) // Timer for clearing buffer
+  const buffer = useRef<string>('')
+  const timeout = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const clearBuffer = () => {
       if (buffer.current.length >= MIN_BARCODE_LENGTH) {
-        onRead(buffer.current) // Trigger callback with the full barcode
+        onRead(buffer.current)
       }
-      buffer.current = '' // Clear buffer
+      buffer.current = ''
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!enabled) return // Exit early if the scanner is disabled
+      if (!enabled) return
 
       if (event.key.length === 1) {
-        buffer.current += event.key // Append character to buffer
+        buffer.current += event.key
 
-        // Reset or create the timeout to clear the buffer
         if (timeout.current) clearTimeout(timeout.current)
         timeout.current = setTimeout(clearBuffer, SCANNER_TIME_TO_CLEAR)
         return
       }
 
       if (event.key === 'Enter') {
-        if (timeout.current) clearTimeout(timeout.current) // Clear the timeout
-        clearBuffer() // Process the buffer immediately
+        if (timeout.current) clearTimeout(timeout.current)
+        clearBuffer()
       }
     }
 
-    // Attach the event listener
     window.addEventListener('keydown', handleKeyDown)
 
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       if (timeout.current) clearTimeout(timeout.current)
     }
   }, [enabled, onRead])
 
-  // Simulate barcode scan for testing
   window.simulateScan = enabled ? (code: string) => onRead(code) : () => {}
 
-  return null // No visible UI for this component
+  return null
 }
 
 export default PhysicalBarcodeScanner

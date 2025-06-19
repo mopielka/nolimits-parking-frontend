@@ -1,14 +1,14 @@
 import {
   Backdrop,
+  Button,
   CircularProgress,
   Container,
-  Snackbar,
   Typography,
 } from '@mui/material'
 import type { FC } from 'react'
 import React, { useCallback, useContext, useReducer } from 'react'
 
-// import singleCarImageUrl from '../assets/single-car.png'
+import scannerImageUrl from '../assets/scanner.png'
 import { validateTicket } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
@@ -17,6 +17,7 @@ import Clock from './Clock'
 import ParkingForm from './ParkingForm'
 import PhysicalBarcodeScanner from './PhysicalBarcodeScanner'
 import './ParkingTicketPage.css'
+import SnackbarMessage from './SnackbarMessage'
 
 const enableCameraScanner = Boolean(
   Number(import.meta.env.VITE_ENABLE_CAMERA_SCANNER),
@@ -30,6 +31,7 @@ enum ActionType {
   ErrorOccurred,
   Succeeded,
   SetTicketId,
+  ShowForm,
 }
 
 type Action =
@@ -41,6 +43,7 @@ type Action =
       payload: { exitTime: Date | null; remainingPayment: string | null }
     }
   | { type: ActionType.SetTicketId; payload: { ticketId: string } }
+  | { type: ActionType.ShowForm }
 
 interface AppState {
   error?: string
@@ -49,12 +52,14 @@ interface AppState {
   remainingPayment?: string
   processing: boolean
   scannerEnabled: boolean
+  showForm: boolean
 }
 
 const initialState: AppState = {
   processing: false,
   ticketId: '',
   scannerEnabled: true,
+  showForm: false,
 }
 
 const reducer: React.Reducer<AppState, Action> = (state, action) => {
@@ -81,6 +86,8 @@ const reducer: React.Reducer<AppState, Action> = (state, action) => {
       }
     case ActionType.SetTicketId:
       return { ...state, ticketId: action.payload.ticketId }
+    case ActionType.ShowForm:
+      return { ...state, showForm: true }
     default:
       return state
   }
@@ -93,42 +100,27 @@ const formatTime = (date?: Date) =>
 
 const validateScannedCode = (code: string): boolean => /^[0-9]+$/.test(code)
 
-const SnackbarMessage = ({
-  open,
-  message,
-  onClose,
-  style,
-}: {
-  open: boolean
-  message: string
-  onClose: () => void
-  style: React.CSSProperties
-}) => (
-  <Snackbar
-    open={open}
-    onClose={onClose}
-    message={message}
-    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-    ContentProps={{
-      style: {
-        ...style,
-        fontSize: '2rem',
-        margin: 'auto',
-        textAlign: 'center',
-      },
-    }}
-  />
-)
-
 let resetTimeout: NodeJS.Timeout
+let activityTimeout: NodeJS.Timeout
 
 const ParkingTicketPage: FC = () => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   const token = useContext(LoginTokenContext)
 
-  const setTicketId = useCallback((ticketId: string) => {
-    dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
+  const resetManualTimeout = useCallback(() => {
+    clearTimeout(activityTimeout)
+    activityTimeout = setTimeout(() => {
+      dispatch({ type: ActionType.Reset })
+    }, 15_000)
   }, [])
+
+  const setTicketId = useCallback(
+    (ticketId: string) => {
+      resetManualTimeout()
+      dispatch({ type: ActionType.SetTicketId, payload: { ticketId } })
+    },
+    [resetManualTimeout],
+  )
 
   const submit = useCallback(
     (ticketId: string) => {
@@ -207,34 +199,44 @@ const ParkingTicketPage: FC = () => {
           color: 'white',
         }}
       />
-      <Clock />
-      <Typography variant="h4" gutterBottom fontWeight="bolder">
-        Parking
-      </Typography>
-      {/*<img src={singleCarImageUrl} alt="Single Car" />*/}
-      <Typography variant="h6" gutterBottom>
-        {enableCameraScanner && 'Zeskanuj bilet lub wpisz numer '}
-        {!enableCameraScanner && 'Wpisz numer biletu '}
-        aby uzyskać zniżkę na parking
-      </Typography>
-      <div className="scanner-and-form-container">
+      <Container className="scanner-and-form-container">
         {enableCameraScanner && (
           <CameraBarcodeScanner
             onRead={onBarcodeScannerRead}
             className="camera-barcode-scanner"
           />
         )}
-        <ParkingForm
-          ticketId={state.ticketId}
-          setTicketId={setTicketId}
-          disabled={Boolean(state.processing || state.error || state.exitTime)}
-          onSubmit={submit}
-        />
-      </div>
+        {!enableCameraScanner && <div className="parking-sign">P</div>}
+        {state.showForm ? (
+          <ParkingForm
+            ticketId={state.ticketId}
+            setTicketId={setTicketId}
+            disabled={Boolean(
+              state.processing || state.error || state.exitTime,
+            )}
+            onSubmit={submit}
+          />
+        ) : (
+          <div className="scanner-image-container">
+            <Typography variant="h3">Użyj skanera →</Typography>
+            <img src={scannerImageUrl} alt="Scanner" />
+            <Button
+              variant="contained"
+              onClick={() => {
+                resetManualTimeout()
+                dispatch({ type: ActionType.ShowForm })
+              }}
+            >
+              lub kliknij tutaj aby wpisać numer ręcznie
+            </Button>
+          </div>
+        )}
+      </Container>
       <PhysicalBarcodeScanner
         enabled={state.scannerEnabled}
         onRead={onBarcodeScannerRead}
       />
+      <Clock />
     </Container>
   )
 }
