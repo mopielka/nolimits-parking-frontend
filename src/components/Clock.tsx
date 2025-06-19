@@ -16,10 +16,10 @@ const Clock: FC = () => {
       setTime(formatTime(new Date()))
     }
 
-    updateTime() // Initial call to set time immediately
+    updateTime()
     const intervalId = setInterval(updateTime, 1000)
 
-    return () => clearInterval(intervalId) // Cleanup on unmount
+    return () => clearInterval(intervalId)
   }, [])
 
   return (

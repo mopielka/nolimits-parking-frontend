@@ -9,7 +9,6 @@ import type { FC } from 'react'
 import React, { useCallback, useContext, useReducer } from 'react'
 
 import scannerImageUrl from '../assets/scanner.png'
-// import singleCarImageUrl from '../assets/single-car.png'
 import { validateTicket } from '../clients/apiClient'
 import LoginTokenContext from '../contexts/LoginTokenContext'
 
