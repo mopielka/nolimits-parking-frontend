@@ -18,13 +18,11 @@ h4.ticketId {
 }
 
 .parking-ticket-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    place-items: center;
     text-align: center;
-    gap: 0; /* Reduced gap between main sections */
+    height: 100%;
 }
-
 img {
     height: auto;
     max-height: 20vh; /* Responsive max height */
@@ -45,9 +43,9 @@ img {
     grid-gap: 2vh; /* Space between columns */
     width: 90%; /* Ensure it spans the full width */
     max-width: 900px; /* Restrict max width for large screens */
-    margin-top: 2vh;
+    margin: auto;
     justify-items: stretch;
-    align-items: start; /* Align items at the top */
+    align-items: center; /* Align items at the top */
 }
 
 .camera-barcode-scanner,
@@ -57,6 +55,17 @@ img {
     border-radius: 10px;
     padding: 2vh; /* Reduced padding inside the scanner/form */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly smaller shadow */
+}
+
+.parking-sign {
+    width: 50vh;
+    height: 50vh;
+    background-color: navy;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    font-size: 40vh;
+    font-weight: bold;
 }
 
 button {
