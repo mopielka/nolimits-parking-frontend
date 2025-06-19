@@ -68,6 +68,10 @@ img {
     font-weight: bold;
 }
 
+.use-scanner-caption {
+    font-weight: 800 !important;
+}
+
 button {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Adds some depth */
 }

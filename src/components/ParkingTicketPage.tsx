@@ -218,10 +218,12 @@ const ParkingTicketPage: FC = () => {
           />
         ) : (
           <div className="scanner-image-container">
-            <Typography variant="h3">Użyj skanera →</Typography>
+            <Typography className="use-scanner-caption" variant="h3">
+              Użyj skanera →
+            </Typography>
             <img src={scannerImageUrl} alt="Scanner" />
             <Button
-              variant="contained"
+              variant="outlined"
               onClick={() => {
                 resetManualTimeout()
                 dispatch({ type: ActionType.ShowForm })
